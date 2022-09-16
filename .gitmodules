@@ -1,0 +1,3 @@
+[submodule "json-interop-vuln-labs"]
+	path = json-interop-vuln-labs
+	url = git@github.com:BishopFox/json-interop-vuln-labs.git
