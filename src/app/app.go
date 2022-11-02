@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"html/template"
 	"io"
 	"io/ioutil"
@@ -11,18 +12,14 @@ import (
 	"github.com/gorilla/mux"
 )
 
-type Homework struct {
-	Subject  string
-	Filename string
-}
-
 var templates = template.Must(template.ParseFiles("tmpl/index.html"))
 var files []map[string]interface{}
+var requestURL = "http://localhost:8000"
 
 func retrieveFile(w http.ResponseWriter, r *http.Request) {
 	data, err := io.ReadAll(r.Body)
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
 
 	fn, err := jsonparser.GetString(data, "filename")
@@ -36,28 +33,33 @@ func retrieveFile(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if check {
-		// send data to backend
-		w.Write([]byte("sucesss!"))
-		log.Println("Send data to backend!")
+		bodyReader := bytes.NewReader(data)
+		res, err := http.Post(requestURL+"/retrieve", "application/json", bodyReader)
+		if err != nil {
+			log.Fatal(err)
+		}
+		resBody, err := ioutil.ReadAll(res.Body)
+		if err != nil {
+			log.Fatal(err)
+		}
+		w.Write(resBody)
 	} else {
 		w.Write([]byte("nonexistent homework"))
 		log.Println("homework not found :(")
 	}
-
 }
 
 // retrieves available homeworks on the server
 func getHomeworks() {
-	requestURL := "http://localhost:8000/directory"
 
-	res, err := http.Get(requestURL)
+	res, err := http.Get(requestURL + "/directory")
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
 
 	resBody, err := ioutil.ReadAll(res.Body)
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
 
 	jsonparser.ArrayEach(resBody, func(value []byte, dataType jsonparser.ValueType, offset int, err error) {
@@ -71,7 +73,7 @@ func getHomeworks() {
 func index(w http.ResponseWriter, r *http.Request) {
 	var err = templates.ExecuteTemplate(w, "index.html", files)
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
 }
 

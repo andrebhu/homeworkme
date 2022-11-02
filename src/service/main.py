@@ -4,11 +4,13 @@ import os
 import json
 
 from fastapi import FastAPI
+from fastapi.responses import FileResponse
 from pydantic import BaseModel
 
 app = FastAPI()
 path = "files"
 
+# flag{bro_can_i_use_your_chegg}
 
 class File(BaseModel):
     filename: str
@@ -17,9 +19,14 @@ class File(BaseModel):
 
 @app.post("/retrieve")
 async def retrieve(file: File):
+    print(file)
     file_dict = file.dict()
     file_path = os.path.join(path, file_dict["subject"], file_dict["filename"])
-    return open(file_path, "r").read()
+    try:
+        # return open(file_path, "rb")
+        return FileResponse(file_path)
+    except:
+        return "file not found"
 
 
 @app.get("/directory")
@@ -35,5 +42,4 @@ async def directory():
                     "filename": f
                 }
                 data["files"].append(obj)
-
     return data["files"]
