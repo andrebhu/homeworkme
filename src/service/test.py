@@ -1,11 +1,10 @@
 #!/usr/bin/env python3
 
-import requests
+import json
 
 data = {
-    'filename': 'flag.txt',
-    'subject': 'math'
+    "name": "Bob",
+    "name": "Joe"
 }
 
-r = requests.post("http://localhost:8000/retrieve", json=data)
-print(r.text)
+print(data["name"])
