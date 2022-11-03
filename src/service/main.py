@@ -23,7 +23,6 @@ async def retrieve(file: File):
     file_dict = file.dict()
     file_path = os.path.join(path, file_dict["subject"], file_dict["filename"])
     try:
-        # return open(file_path, "rb")
         return FileResponse(file_path)
     except:
         return "file not found"
@@ -31,15 +30,10 @@ async def retrieve(file: File):
 
 @app.get("/directory")
 async def directory():
-    data = {
-        "files": []
-    }
+    data = {"files": []}
     for dirpath, dirnames, filenames in os.walk(path):
         if filenames:
             for f in filenames:
-                obj = {
-                    "subject": dirpath.split("/")[1],
-                    "filename": f
-                }
+                obj = {"subject": dirpath.split("/")[1], "filename": f}
                 data["files"].append(obj)
     return data["files"]
