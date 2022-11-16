@@ -60,6 +60,7 @@ func retrieveFile(w http.ResponseWriter, r *http.Request) {
 
 // retrieves available homeworks on the server
 func getHomeworks() {
+
 	res, err := http.Get(requestURL + "/directory")
 	if err != nil {
 		panic(err)
@@ -79,6 +80,7 @@ func getHomeworks() {
 }
 
 func index(w http.ResponseWriter, r *http.Request) {
+
 	var err = templates.ExecuteTemplate(w, "index.html", files)
 	if err != nil {
 		panic(err)

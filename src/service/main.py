@@ -19,7 +19,6 @@ class File(BaseModel):
 
 @app.post("/retrieve")
 async def retrieve(file: File):
-    print(file)
     file_dict = file.dict()
     file_path = os.path.join(path, file_dict["subject"], file_dict["filename"])
     try:
